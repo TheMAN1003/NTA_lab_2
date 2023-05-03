@@ -10,7 +10,7 @@ def extended_gcd(a, b):
 
 
 
-def CRT(number, lista, listp):
+def CRT(lista, listp):
     N = 1
     listN = []
     listM = []
@@ -38,3 +38,43 @@ def buildTable(a, n, mod, dividers):
         r.append(tmp)
     return r
 
+def findX_jInTable(table, column, value):
+    for i in range(len(table[column])):
+        if table[column][i] == value:
+            return i
+
+
+def findX(alpha, beta, n, mod, p, l, column, table):
+    alpha = (extended_gcd(alpha, mod)[1]) % mod
+    p_i = p*p
+    p_j = p
+    x = findX_jInTable(table, column, beta**int((n/p)) % mod)
+    for i in range(1, l):
+        degree = int(n/p_i)
+        a = alpha**x % mod
+        temp = (beta*a)**degree % mod
+        x += p_j*findX_jInTable(table, column, temp)
+        p_j *= p
+        p_i *= p
+    return x
+
+
+def silPolGel(alpha, beta, mod):
+    n = mod - 1
+    p_i = factorint(n)
+    table = buildTable(alpha, n, mod, p_i)
+    i = 0
+    listX = []
+    listP = []
+    for p in p_i:
+        pow = p_i[p]
+        listX.append(findX(alpha, beta, n, mod, p, pow, i, table))
+        listP.append(p**pow)
+        i += 1
+    return CRT(listX,listP)
+
+a = 5
+b = 11
+mod = 73
+
+print(silPolGel(a, b, mod))
