@@ -1,8 +1,5 @@
 from sympy.ntheory import factorint
 import time
-import cProfile
-import pstats
-from math import log2
 
 def extended_gcd(a, b):
     if b == 0:
@@ -19,7 +16,7 @@ def CRT(lista, listp):
     for i in listp:
         N *= i
     for i in listp:
-        listN.append(N / i)
+        listN.append(int(N / i))
     for i in range(len(listN)):
         listM.append(extended_gcd(listN[i], listp[i])[1])
     for i in range(len(lista)):
@@ -31,10 +28,11 @@ def powMod(x, pow, mod):
     C = 1
     if pow == 0:
         return C
-    for i in range(int(log2(pow)), -1, -1):
-        if (pow >> i) & 1 == 1:
+    powB = bin(pow)[2:]
+    for i in range(len(powB)):
+        if powB[i] == '1':
             C = (C * x) % mod
-        if i != 0:
+        if i != len(powB) - 1:
             C = (C * C) % mod
     return C
 
@@ -44,9 +42,7 @@ def buildTable(a, n, mod, dividers):
         tmp = []
         np = int(n/p_i)
         for j in range(p_i):
-
-            tmp.append( powMod(a, j*np, mod))
-
+            tmp.append(powMod(a, j*np, mod))
         r.append(tmp)
     return r
 
@@ -83,15 +79,23 @@ def silPolGel(alpha, beta, mod):
         listX.append(findX(alpha, beta, n, mod, p, pow, i, table))
         listP.append(p**pow)
         i += 1
-    return CRT(listX,listP)
+    return CRT(listX, listP)
 
-a = 1530811200
-b = 2696801635
-p = 3197343637
-
+a = 3691395420298
+b = 520940435869
+p = 7999955915857
 
 start_time = time.time()
-print(silPolGel(a, b, p))
+
+k = silPolGel(a, b, p)
+
+print(k)
+if powMod(a, k, p) == b:
+    print(1)
+else:
+    print(0)
+
+
 end_time = time.time()
 execution_time = end_time - start_time
 
