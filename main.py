@@ -1,5 +1,6 @@
-from sympy.ntheory import factorint
 import time
+from sympy.ntheory import factorint
+
 
 def extended_gcd(a, b):
     if b == 0:
@@ -7,6 +8,7 @@ def extended_gcd(a, b):
     else:
         (d, x, y) = extended_gcd(b, a % b)
         return d, y, x - int(a / b) * y
+
 
 def CRT(lista, listp):
     N = 1
@@ -24,6 +26,7 @@ def CRT(lista, listp):
     X = X % N
     return int(X)
 
+
 def powMod(x, pow, mod):
     C = 1
     if pow == 0:
@@ -36,15 +39,17 @@ def powMod(x, pow, mod):
             C = (C * C) % mod
     return C
 
+
 def buildTable(a, n, mod, dividers):
     r = []
     for p_i in dividers:
         tmp = []
-        np = int(n/p_i)
+        np = int(n / p_i)
         for j in range(p_i):
-            tmp.append(powMod(a, j*np, mod))
+            tmp.append(powMod(a, j * np, mod))
         r.append(tmp)
     return r
+
 
 def findX_jInTable(table, column, value):
     for i in range(len(table[column])):
@@ -54,14 +59,14 @@ def findX_jInTable(table, column, value):
 
 def findX(alpha, beta, n, mod, p, l, column, table):
     alpha = (extended_gcd(alpha, mod)[1]) % mod
-    p_i = p*p
+    p_i = p * p
     p_j = p
-    x = findX_jInTable(table, column, powMod(beta, int((n/p)), mod))
+    x = findX_jInTable(table, column, powMod(beta, int((n / p)), mod))
     for i in range(1, l):
-        degree = int(n/p_i)
+        degree = int(n / p_i)
         a = powMod(alpha, x, mod)
-        temp = powMod(beta*a, degree, mod)
-        x += p_j*findX_jInTable(table, column, temp)
+        temp = powMod(beta * a, degree, mod)
+        x += p_j * findX_jInTable(table, column, temp)
         p_j *= p
         p_i *= p
     return x
@@ -70,6 +75,7 @@ def findX(alpha, beta, n, mod, p, l, column, table):
 def silPolGel(alpha, beta, mod):
     n = mod - 1
     p_i = factorint(n)
+    print(p_i)
     table = buildTable(alpha, n, mod, p_i)
     i = 0
     listX = []
@@ -77,28 +83,30 @@ def silPolGel(alpha, beta, mod):
     for p in p_i:
         pow = p_i[p]
         listX.append(findX(alpha, beta, n, mod, p, pow, i, table))
-        listP.append(p**pow)
+        listP.append(p ** pow)
         i += 1
     return CRT(listX, listP)
 
-a = 3691395420298
-b = 520940435869
-p = 7999955915857
+
+
+print("Program can solve: a^x = b mod p. Please enter next parameters:")
+print("Enter a:")
+a = int(input())
+print("Enter b:")
+b = int(input())
+print("Enter p:")
+p = int(input())
+#
+# a = 2885226842648
+# b = 6486186606428
+# p = 7141476685349
+
 
 start_time = time.time()
 
 k = silPolGel(a, b, p)
 
-print(k)
-if powMod(a, k, p) == b:
-    print(1)
-else:
-    print(0)
-
-
 end_time = time.time()
+print("x =", k)
 execution_time = end_time - start_time
-
 print("Час виконання: ", execution_time, "секунд")
-
-
