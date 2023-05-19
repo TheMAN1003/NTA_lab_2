@@ -19,9 +19,9 @@ def bruteForce(a, b, mod):
             return x
     print("such x not found")
 
-a = 3691395420298
-b = 520940435869
-p = 7999955915857
+a = 566161115
+b = 224362907
+p = 1246187221
 
 start_time = time.time()
 print(bruteForce(a, b, p))
